@@ -1,0 +1,343 @@
+<HomeScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        
+        # Header (ส่วนหัวแอป)
+        BoxLayout:
+            size_hint_y: 0.1
+            canvas.before:
+                Color:
+                    rgba: 0.9, 0.9, 0.9, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                text: "Instagram"
+                color: 0, 0, 0, 1
+                bold: True
+
+        # ส่วนฟีดโพสต์ (ใช้ ScrollView เพื่อให้เลื่อนจอได้)
+        ScrollView:
+            BoxLayout:
+                id: feed_container
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 20
+                padding: 10
+
+                # เพิ่มโพสต์ที่ 1
+                PostWidget:
+                    username: "Taylor_Official"
+                    profile_pic: "https://placekitten.com/100/100" # ใส่ URL รูปจริงได้
+                    post_image: "https://placekitten.com/600/600"
+                    caption: "Love this vibe! #Swiftie"
+
+                # เพิ่มโพสต์ที่ 2
+                PostWidget:
+                    username: "User_296"
+                    profile_pic: "https://placekitten.com/101/101"
+                    post_image: "https://placekitten.com/601/601"
+                    caption: "Working on my Kivy Project! 30 Widgets incoming."
+
+                # เพิ่มโพสต์ที่ 3
+                PostWidget:
+                    username: "Kivy_Master"
+                    profile_pic: "https://placekitten.com/102/102"
+                    post_image: "https://placekitten.com/602/602"
+                    caption: "Coding is fun when it works."
+# แก้ไขในส่วนของ HomeScreen ตรง PostWidget ต่างๆ
+                PostWidget:
+                    username: "Taylor_Official"
+                    profile_pic: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&h=100&fit=crop"
+                    post_image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&h=600&fit=crop"
+                    caption: "Love this vibe! #Swiftie"
+
+                PostWidget:
+                    username: "User_296"
+                    profile_pic: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop"
+                    post_image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=600&h=600&fit=crop"
+                    caption: "Working on my Kivy Project! 30 Widgets incoming."
+        # Bottom Nav (ส่วนแถบเมนูล่าง)
+        BoxLayout:
+            size_hint_y: 0.1
+            Button:
+                text: "Home"
+                on_press: root.manager.current = 'home'
+            Button:
+                text: "Search"
+                on_press: root.manager.current = 'search'
+            Button:
+                text: "Post"
+                on_press: root.manager.current = 'post_page'
+            Button:
+                text: "Profile"
+                on_press: root.manager.current = 'profile'
+<PostWidget>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: "600dp"
+    padding: 10
+    spacing: 5
+
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1 # พื้นหลังขาว
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    canvas.after:
+        Color:
+            rgba: 0.9, 0.9, 0.9, 1
+        Line:
+            points: [self.x, self.y, self.x + self.width, self.y]
+            width: 1
+
+    # ส่วนหัวโพสต์
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        AsyncImage:
+            source: root.profile_pic
+            size_hint_x: 0.2
+        Label:
+            text: root.username
+
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+    # รูปภาพหลัก
+    AsyncImage:
+        source: root.post_image
+        allow_stretch: True
+
+    # ส่วนควบคุมและคอมเมนต์
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: None
+        height: "120dp"
+        spacing: 5
+        BoxLayout:
+            size_hint_y: None
+            height: "40dp"
+            Button:
+                text: "Like" if not root.is_liked else "Liked"
+                background_color: (1, 0.2, 0.2, 1) if root.is_liked else (0.2, 0.2, 0.2, 1)
+                on_press: root.toggle_like()
+            Button:
+                text: "Comment"
+                on_press: root.focus_comment()
+        TextInput:
+            id: comment_input
+            hint_text: "Add a comment..."
+            multiline: False
+            size_hint_y: None
+            height: "40dp"
+        Button:
+            text: "Post Comment"
+            size_hint_y: None
+            height: "40dp"
+            on_press: root.submit_comment(comment_input.text)
+
+    # คำบรรยายใต้ภาพ
+    Label:
+        text: root.caption
+        size_hint_y: None
+        height: "40dp"
+        halign: 'left'
+        text_size: self.size
+    
+    BoxLayout:
+        id: comments_list
+        orientation: 'vertical'
+        size_hint_y: None
+        height: self.minimum_height
+
+
+<ProfileScreen>:
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        
+        # 1. ส่วนเนื้อหาโปรไฟล์ (เลื่อนได้)
+        ScrollView:
+            do_scroll_x: False
+            BoxLayout:
+                id: profile_main_layout
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: 10
+                spacing: 15
+
+                # ส่วนข้อมูลผู้ใช้และยอด Follow (บนขวา)
+                BoxLayout:
+                    size_hint_y: None
+                    height: "100dp"
+                    spacing: 10
+                    AsyncImage:
+                        source: root.profile_pic_url
+                        size_hint_x: 0.3
+                    
+                    # กลุ่มตัวเลขสถิติ (Posts, Followers, Following)
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Label:
+                            text: "12\nPosts"
+                            halign: 'center'
+                        Label:
+                            text: "500\nFollowers"
+                            halign: 'center'
+                        Label:
+                            text: "300\nFollowing"
+                            halign: 'center'
+
+                # ส่วนชื่อและ Bio
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: "60dp"
+                    Label:
+                        id: profile_name
+                        text: "User_296"
+                        bold: True
+                        halign: 'left'
+                        text_size: self.size
+                    Label:
+                        text: "Kivy Developer | Student ID: 296"
+                        color: 0.7, 0.7, 0.7, 1
+                        halign: 'left'
+                        text_size: self.size
+
+                # ปุ่ม Action
+                BoxLayout:
+                    size_hint_y: None
+                    height: "40dp"
+                    spacing: 5
+                    Button:
+                        text: "Edit Profile"
+                        on_press: root.edit_profile()
+                    Button:
+                        text: "Share"
+                        on_press: root.share_profile()
+
+                # ตารางรูปภาพ (Grid)
+                GridLayout:
+                    id: profile_grid
+                    cols: 3
+                    spacing: 2
+                    size_hint_y: None
+                    height: self.minimum_height
+                    
+                # Bottom Nav (ต้องมีทุกหน้าเพื่อกดกลับ)
+        BoxLayout:
+            size_hint_y: 0.1
+            Button:
+                text: "Home"
+                on_press: root.manager.current = 'home'
+            Button:
+                text: "Search"
+                on_press: root.manager.current = 'search'
+            Button:
+                text: "Post"
+                on_press: root.manager.current = 'post_page'
+            Button:
+                text: "Profile"
+                on_press: root.manager.current = 'profile'
+
+<PostScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        
+        Label:
+            text: "Select a photo to post"
+            size_hint_y: 0.1  # กำหนดพื้นที่ส่วนบน
+
+        ScrollView:
+            size_hint_y: 0.6  # สำคัญมาก! ต้องระบุเพื่อให้ไม่ไปทับปุ่มล่าง
+            GridLayout:
+                id: gallery_grid
+                cols: 3
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 2
+
+        TextInput:
+            id: post_caption
+            hint_text: "Write a caption..."
+            size_hint_y: 0.1  # กำหนดพื้นที่ช่องพิมพ์
+
+        Button:
+            id: post_button
+            text: "Post Now"
+            size_hint_y: 0.1  # กำหนดพื้นที่ปุ่มโพสต์
+            on_press: root.process_post(post_caption.text)
+
+        # แถบเมนูล่าง (Bottom Nav)
+        BoxLayout:
+            size_hint_y: 0.1  # กำหนดพื้นที่แถบเมนู
+            Button:
+                text: "Home"
+                on_press: root.manager.current = 'home'
+            Button:
+                text: "Search"
+                on_press: root.manager.current = 'search'
+            Button:
+                text: "Post"
+                on_press: root.manager.current = 'post_page'
+            Button:
+                text: "Profile"
+                on_press: root.manager.current = 'profile'
+
+<SearchScreen>:
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        
+        Label:
+            text: "Explore Posts"
+            size_hint_y: 0.1  # 10% ของหน้าจอ
+            bold: True
+
+        ScrollView:
+            size_hint_y: 0.8  # 80% ของหน้าจอ ให้พื้นที่ ScrollView มากที่สุด
+            BoxLayout:
+                id: search_container
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 10
+
+
+
+        # Bottom Nav (แถบเมนูล่าง)
+        BoxLayout:
+            size_hint_y: 0.1  # 10% ของหน้าจอ
+            # ระบุความสูงคงที่ (Fixed Height) เพื่อความมั่นใจว่ากดติดแน่นอน
+            height: "50dp"
+            Button:
+                text: "Home"
+                on_press: root.manager.current = 'home'
+            Button:
+                text: "Search"
+                on_press: root.manager.current = 'search'
+            Button:
+                text: "Post"
+                on_press: root.manager.current = 'post_page'
+            Button:
+                text: "Profile"
+                on_press: root.manager.current = 'profile'
